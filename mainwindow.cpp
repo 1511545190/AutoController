@@ -2,11 +2,15 @@
 #include "ui_mainwindow.h"
 #include "controller.h"
 #include "looker.h"
+#include "overlaywidget.h"
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
+
+
     ui->setupUi(this);
+
     //look
     startMouseTracking();
     // 鼠标移动
@@ -49,6 +53,15 @@ MainWindow::MainWindow(QWidget *parent)
         }
     });
 
+    // 当palinTextEdit中的内容发生变化时，更新statusLabel的内容
+    connect(ui->insertContext, &QPlainTextEdit::textChanged, [this](){
+        QString content = ui->insertContext->toPlainText();
+        QString numberOfLines = QString::number(content.count("\n") + 1);
+        ui->statusbar->showMessage("行数：" + numberOfLines);
+    });
+
+
+
 
 }
 
@@ -57,3 +70,10 @@ MainWindow::~MainWindow()
     stopMouseTracking();
     delete ui;
 }
+// 保存当前鼠标的位置的到ui->position
+void MainWindow::on_acSave_triggered()
+{
+    ui->position->setText(QString::asprintf("%d,%d", cur_x, cur_y));
+    qDebug() << "Saved";
+}
+

@@ -12,12 +12,14 @@ SOURCES += \
     controller.cpp \
     looker.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    overlaywidget.cpp
 
 HEADERS += \
     controller.h \
     looker.h \
-    mainwindow.h
+    mainwindow.h \
+    overlaywidget.h
 
 FORMS += \
     mainwindow.ui
