@@ -19,7 +19,8 @@ public:
 
 private slots:
     void on_acSave_triggered();
-
+protected:
+    void closeEvent(QCloseEvent *event) override;
 private:
     Ui::MainWindow *ui;
 };

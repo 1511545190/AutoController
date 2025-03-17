@@ -4,10 +4,11 @@
 #include <Windows.h>
 #include <QDebug>
 #include <QString>
+#include <memory>
 #include "overlaywidget.h"
 extern HHOOK mouseHook; // 声明
 extern int cur_x, cur_y;
-extern OverlayWidget *looker_overlay;// 光点
+extern std::unique_ptr<OverlayWidget> looker_overlay;// 光点
 // 鼠标钩子回调函数, 用于捕获鼠标事件
 // 在什么时候调用这个函数呢？当鼠标事件发生时，系统会调用这个函数
 // 只需要在这个函数里面处理鼠标事件即可

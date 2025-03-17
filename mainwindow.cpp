@@ -77,3 +77,14 @@ void MainWindow::on_acSave_triggered()
     qDebug() << "Saved";
 }
 
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    // 关闭悬浮窗
+    if (looker_overlay) {
+        looker_overlay->close();  // 关闭悬浮窗
+
+    }
+    event->accept();// 关闭主窗口
+
+}
+
