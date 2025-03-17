@@ -89,7 +89,7 @@ void controller::simulateKeyPress(char key)
         inputs[1].type = INPUT_KEYBOARD;
         inputs[1].Anonymous.ki.wVk = 0;
         inputs[1].Anonymous.ki.wScan = unicodeScanCode;
-        inputs[1].Anonymous.ki.dwFlags = KEYBD_EVENT_FLAGS_KEYEVENTF_UNICODE | KEYBD_EVENT_FLAGS_KEYEVENTF_KEYUP;
+        inputs[1].Anonymous.ki.dwFlags = KEYBD_EVENT_FLAGS_KEYEVENT*F_UNICODE | KEYBD_EVENT_FLAGS_KEYEVENTF_KEYUP;
         inputs[1].Anonymous.ki.time = 0;
         inputs[1].Anonymous.ki.dwExtraInfo = UIntPtr.Zero;
 

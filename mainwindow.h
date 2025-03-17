@@ -24,6 +24,8 @@ private slots:
 
     void on_check_main_ontop_stateChanged(int arg1);
 
+    void on_btn_auto_time_run_clicked();
+
 protected:
     void closeEvent(QCloseEvent *event) override;
 private:

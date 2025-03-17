@@ -15,7 +15,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->check_main_ontop->setCheckState(Qt::Unchecked);
     ui->curLineSpin->setMaximum(0);
     ui->btn_insert_down->setEnabled(false);
-
+    ui->check_main_ontop->setCheckState(Qt::Checked);
+    ui->timespin->setValue(1);
     //look
     startMouseTracking();
     // 鼠标移动
@@ -70,25 +71,30 @@ MainWindow::MainWindow(QWidget *parent)
         //将每一行加入到task_list
         task_list.clear();
         task_list = content.split("\n");
+
         qDebug() << "task_list: " << task_list;
         ui->btn_insert_down->setEnabled(true);
     });
 
-
+    // 点击按钮，执行下一行
     connect(ui->btn_insert_down,&QPushButton::clicked,[=](){
+        qDebug()<<"btn_insert_down";
+
         int posx = ui->position->text().split(",")[0].toInt();
         int posy = ui->position->text().split(",")[1].toInt();
+
         controller::simulateMouseMove(posx,posy);
         controller::simulateMouseClick();
         QString sendMessage = task_list[cur_task_line];
+
         for(int i = 0; i < sendMessage.length(); i++)
         {
             //QChar to char，unicode
             char c;
             c = sendMessage[i].toLatin1();
-            Sleep(200);
-            qDebug()<<sendMessage[i]<<","<<c;
 
+            qDebug()<<sendMessage[i]<<","<<c;
+            Sleep(50);
             controller::simulateKeyPress(c);
         }
         controller::simulateKeyPress('\n');
@@ -121,7 +127,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
     // 关闭悬浮窗
     if (looker_overlay) {
         looker_overlay->close();  // 关闭悬浮窗
-
     }
     event->accept();// 关闭主窗口
 
@@ -136,13 +141,11 @@ void MainWindow::on_check_main_ontop_stateChanged(int arg1)
 {
     // 获取窗口句柄
     // reinterpret_cast<HWND>(this->winId())将窗口转换为HWND类型
-
     HWND hwnd = reinterpret_cast<HWND>(this->winId());
 
     if(arg1 == Qt::Checked)
     {
         // this->setWindowFlags(Qt::WindowStaysOnTopHint);//设置窗口置顶，用QT自带的会闪烁
-
         //setWindowPos函数设置窗口的位置,HWND_TOPMOST表示置顶,0,0表示窗口的左上角坐标,0,0表示窗口的宽高,SWP_NOSIZE | SWP_NOMOVE表示不改变窗口的大小和位置
         ::SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
 
@@ -157,6 +160,35 @@ void MainWindow::on_check_main_ontop_stateChanged(int arg1)
     }
 
     this->show();
+
+}
+
+
+void MainWindow::on_btn_auto_time_run_clicked()
+{
+    qDebug()<<"on_btn_auto_time_run_clicked";
+    ui->btn_auto_time_run->setEnabled(false);
+    ui->statusbar->showMessage("开始自动执行");
+    int interval = ui->timespin->value();
+    qDebug()<<"interval:"<<interval;
+    QTimer *timer = new QTimer(this);
+    timer->start(interval*1000); // 每隔interval毫秒发射timeout信号
+    connect(timer, &QTimer::timeout, [=](){
+
+        emit ui->btn_insert_down->clicked();
+
+        if(cur_task_line == total_task_line)
+        {
+            cur_task_line = 0;
+            task_list.clear();
+            emit ui->insertContext->textChanged();
+            ui->btn_auto_time_run->setEnabled(true);
+            timer->stop();
+        }
+    });
+
+    ui->btn_auto_time_run->setEnabled(true);
+
 
 }
 
