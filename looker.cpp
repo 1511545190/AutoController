@@ -7,7 +7,7 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
         cur_x = pMouseStruct->pt.x;
         cur_y = pMouseStruct->pt.y;
         looker_overlay->updatePosition(cur_x, cur_y);
-        qDebug()<<QString::asprintf("Windows x: %d, y: %d", cur_x, cur_y);
+        // qDebug()<<QString::asprintf("Windows x: %d, y: %d", cur_x, cur_y);
     }
     return CallNextHookEx(mouseHook, nCode, wParam, lParam);
 }

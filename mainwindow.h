@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include "overlaywidget.h"
+#include <QCloseEvent>
+#include <QStringList>
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -19,9 +21,15 @@ public:
 
 private slots:
     void on_acSave_triggered();
+
+    void on_check_main_ontop_stateChanged(int arg1);
+
 protected:
     void closeEvent(QCloseEvent *event) override;
 private:
     Ui::MainWindow *ui;
+    int cur_task_line;
+    int total_task_line;
+    QStringList task_list;
 };
 #endif // MAINWINDOW_H

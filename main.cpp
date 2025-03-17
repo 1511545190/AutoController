@@ -8,12 +8,15 @@ std::unique_ptr<OverlayWidget> looker_overlay;
 // 通过std::unique_ptr自动管理内存，无需手动delete
 int main(int argc, char *argv[])
 {
+    QApplication::setAttribute(Qt::AA_UseOpenGLES);//使用OpenGL ES加速
 
     QApplication a(argc, argv);
 
     OverlayWidget overlay;
     looker_overlay = std::make_unique<OverlayWidget>(); // 堆上创建
     looker_overlay->show();
+
+
 
     MainWindow w;
     w.show();

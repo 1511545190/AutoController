@@ -3,13 +3,18 @@
 #include "controller.h"
 #include "looker.h"
 #include "overlaywidget.h"
+#include <QTimer>
+#include <QPropertyAnimation>
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    , ui(new Ui::MainWindow),cur_task_line(0)
 {
 
 
     ui->setupUi(this);
+    ui->check_main_ontop->setCheckState(Qt::Unchecked);
+    ui->curLineSpin->setMaximum(0);
+    ui->btn_insert_down->setEnabled(false);
 
     //look
     startMouseTracking();
@@ -55,11 +60,45 @@ MainWindow::MainWindow(QWidget *parent)
 
     // 当palinTextEdit中的内容发生变化时，更新statusLabel的内容
     connect(ui->insertContext, &QPlainTextEdit::textChanged, [this](){
-        QString content = ui->insertContext->toPlainText();
+        cur_task_line = 0;
+        QString content = ui->insertContext->toPlainText().toUtf8();
         QString numberOfLines = QString::number(content.count("\n") + 1);
         ui->statusbar->showMessage("行数：" + numberOfLines);
+        total_task_line = content.count("\n") + 1;
+        ui->curLineSpin->setMinimum(0);
+        ui->curLineSpin->setMaximum(total_task_line);
+        //将每一行加入到task_list
+        task_list.clear();
+        task_list = content.split("\n");
+        qDebug() << "task_list: " << task_list;
+        ui->btn_insert_down->setEnabled(true);
     });
 
+
+    connect(ui->btn_insert_down,&QPushButton::clicked,[=](){
+        int posx = ui->position->text().split(",")[0].toInt();
+        int posy = ui->position->text().split(",")[1].toInt();
+        controller::simulateMouseMove(posx,posy);
+        controller::simulateMouseClick();
+        QString sendMessage = task_list[cur_task_line];
+        for(int i = 0; i < sendMessage.length(); i++)
+        {
+            //QChar to char，unicode
+            char c;
+            c = sendMessage[i].toLatin1();
+            Sleep(200);
+            qDebug()<<sendMessage[i]<<","<<c;
+
+            controller::simulateKeyPress(c);
+        }
+        controller::simulateKeyPress('\n');
+        cur_task_line++;
+        ui->statusbar->showMessage("当前执行行号：" + QString::number(cur_task_line)+"总行数"+QString::number(total_task_line));
+    });
+
+    connect(ui->curLineSpin,&QSpinBox::valueChanged,[=](int value){
+        cur_task_line = value;
+    });
 
 
 
@@ -85,6 +124,39 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
     }
     event->accept();// 关闭主窗口
+
+}
+
+
+
+
+
+
+void MainWindow::on_check_main_ontop_stateChanged(int arg1)
+{
+    // 获取窗口句柄
+    // reinterpret_cast<HWND>(this->winId())将窗口转换为HWND类型
+
+    HWND hwnd = reinterpret_cast<HWND>(this->winId());
+
+    if(arg1 == Qt::Checked)
+    {
+        // this->setWindowFlags(Qt::WindowStaysOnTopHint);//设置窗口置顶，用QT自带的会闪烁
+
+        //setWindowPos函数设置窗口的位置,HWND_TOPMOST表示置顶,0,0表示窗口的左上角坐标,0,0表示窗口的宽高,SWP_NOSIZE | SWP_NOMOVE表示不改变窗口的大小和位置
+        ::SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
+
+        qDebug()<<"Checked";
+
+    }
+    else
+    {
+        // this->setWindowFlags(Qt::Window);//取消窗口置顶
+        ::SetWindowPos(hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
+
+    }
+
+    this->show();
 
 }
 

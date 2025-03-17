@@ -19,10 +19,8 @@ OverlayWidget::OverlayWidget(QWidget *parent)
     // 逻辑尺寸指的是在不考虑缩放的情况下的尺寸，比如在屏幕分辨率为1920x1080的情况下，逻辑尺寸就是1920x108
     // 实际物理尺寸指的是在考虑缩放的情况下的尺寸，比如在屏幕分辨率为1920x1080的情况下，缩放因子为200%，实际物理尺寸就是3840x2160
     // 那么画坐标的时候，就需要把逻辑坐标转换为物理坐标，比如逻辑坐标(100, 100)对应的物理坐标就是(200, 200)
-    setGeometry(QRect(0, 0,
-                      screen->geometry().width() * scale,
-                      screen->geometry().height() * scale
-                      ));
+    setGeometry(QRect(0, 0,screen->geometry().width() * scale,screen->geometry().height() * scale));
+    // setGeometry函数的作用是设置窗口的位置和大小，这里设置窗口大小为屏幕大小，即全屏
 }
 
 void OverlayWidget::paintEvent(QPaintEvent*)
@@ -49,7 +47,7 @@ void OverlayWidget::paintEvent(QPaintEvent*)
 void OverlayWidget::updatePosition(int cur_x, int cur_y)
 {
     m_pos = QPoint(cur_x, cur_y);
-    qDebug()<< "Read Point Position: " << m_pos;
+    // qDebug()<< "Read Point Position: " << m_pos;
     update();// 重绘
 }
 
